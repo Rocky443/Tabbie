@@ -1,5 +1,4 @@
-{% extends "draw_rbase.html" %}
-
+{% extends "base.html" %}
 {% load static %}
 {% load debate_tags %}
 
@@ -8,10 +7,9 @@
        <script type="text/javascript" charset="utf-8">
             $(document).ready( function() {
                 var table = $("#dataTable").dataTable({
-                    "aaSorting": [[ 0, "asc" ]],
+                    "aaSorting": [[ {{ round }} + 3, "desc" ], [ 1, "asc" ]],
                 });
                 new $.fn.dataTable.FixedHeader( table, {alwaysCloneTop: true});
-
             } );
         </script>
         <script type="text/javascript" language="javascript" src="{% static 'js/emoji.js' %}"></script>
@@ -21,14 +19,16 @@
 
 {% block head-title %}Team Standings <small>after Round {{ round }}</small>{% endblock %}
 {% block page-title %}Team Standings after Round {{ round }}{% endblock %}
-{% block body-class %}team-standings{% endblock %}
+{% block body-class %}public-team-standings{% endblock %}
+
+{% block nav %}{% include "public/nav.html" %}{% endblock %}
+{% block footer %}{% include "public/footer.html" %}{% endblock %}
 
 {% block content %}
 
 <table id="dataTable" class="table table-hover table-bordered table-striped" cellspacing="0" cellpadding="0">
     <thead>
         <tr>
-            <th><span data-toggle="tooltip" title="Ranking" class="glyphicon glyphicon-signal"></span></th>
             {% if show_emoji > 0 %}
                 <th></th>
             {% endif %}
@@ -38,18 +38,13 @@
             {% endif %}
             {% for round in rounds %}
             <th>R{{ round }}</th>
-            <th></th>
             {% endfor %}
-            <th>Total</th>
             <th>Wins</th>
-            <th>Affs</th>
         </tr>
     </thead>
     <tbody>
     {% for team in teams %}
-    <tr class="
-        {% if not team.results_in %}danger{% endif%}">
-        <td>{{ team.rank }}</td>
+    <tr>
         {% if show_emoji > 0 %}
             <td class="team-emoji team-{{ team.id }}"></td>
         {% endif %}
@@ -60,37 +55,22 @@
             <td>{{ team.institution }}</td>
         {% endif %}
         {% for score in team.scores %}
-            <td>
-                {% if score.1 == 1 %}
-                    {{ score.0|stringformat:".2f" }}
-                {% elif score.1 == 0 %}
-                    {{ score.0|stringformat:".2f" }}
-                {% else %}
-                    No Result
-                {% endif %}
-            </td>
-            {% if score.1 == 1 %}
+            {% if score.0 == 1 %}
                 <td class="opponent-emoji">
                     <span class="glyphicon glyphicon-arrow-up text-success"></span> vs
-                    <span title="Won against {{ score.2.name }} ({{ score.2.speakers|join:", " }})" data-toggle="tooltip" class=" team-{{ score.2.id }}"></span>
+                    <span title="Won against {{ score.1.name }} ({{ score.1.speakers|join:", " }})" data-toggle="tooltip" class=" team-{{ score.1.id }}"></span>
                 </td>
-            {% elif score.1 == 0 %}
+            {% elif score.0 == 0 %}
                 <td class="opponent-emoji">
                     <span class="glyphicon glyphicon-arrow-down text-danger"></span> vs
-                    <span title="Lost to {{ score.2.name }} ({{ score.2.speakers|join:", " }})" data-toggle="tooltip" class="team-{{ score.2.id }}"></span>
+                    <span title="Lost to {{ score.1.name }} ({{ score.1.speakers|join:", " }})" data-toggle="tooltip" class="team-{{ score.1.id }}"></span>
                 </td>
             {% else %}
                 <td></td>
             {% endif %}
         {% endfor %}
         <td>
-            {{ team.speaker_score|stringformat:".2f" }}
-        </td>
-        <td>
-            {{ team.points }}
-        </td>
-        <td>
-            {% aff_count team round %}
+            {{ team.wins }}
         </td>
     </tr>
     {% endfor %}
