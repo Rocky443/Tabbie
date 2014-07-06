@@ -8,7 +8,8 @@
        <script type="text/javascript" charset="utf-8">
             $(document).ready( function() {
                 var table = $("#dataTable").dataTable({
-                    "aaSorting": [[ 0, "asc" ]],
+                    "aaSorting": [[ 1 {% if show_emoji > 0 and not for_print %}+ 1{% endif %}
+                        + {% if show_institutions %}+ 1{% endif %} + 2 * {{ rounds|length }} + 1, "desc" ], [ 3 + 2 * {{ rounds|length }}, "desc" ]],
                 });
                 new $.fn.dataTable.FixedHeader( table, {alwaysCloneTop: true});
 
@@ -48,7 +49,7 @@
     <tbody>
     {% for team in teams %}
     <tr class="{% if not team.results_in %}danger{% endif %}">
-        <td>{{ team.rank }}</td>
+        <td>{{ team.rank }}{{ team.rank_shared|yesno:"=," }}</td>
         {% if show_emoji > 0 and not for_print %}
             <td class="team-emoji team-{{ team.id }}"></td>
         {% endif %}

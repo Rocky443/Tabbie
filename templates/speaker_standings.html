@@ -4,10 +4,14 @@
 
 {% block extra-head %}
     <script type="text/javascript" charset="utf-8">
-        $(document).ready( function() {
-            var table = $("#dataTable").dataTable();
-            new $.fn.dataTable.FixedHeader( table, {alwaysCloneTop: true});
-        } );
+       <script type="text/javascript" charset="utf-8">
+            $(document).ready( function() {
+                var table = $("#dataTable").dataTable({
+                    "aaSorting": [[ 3 + 2 * {{ rounds|length }} + 1, "desc" ], [ 3 + 2 * {{ rounds|length }}, "desc" ]],
+                });
+                new $.fn.dataTable.FixedHeader( table, {alwaysCloneTop: true});
+
+            } );
     </script>
     <script type="text/javascript" language="javascript" src="{% static 'js/emoji.js' %}"></script>
 {% endblock extra-head %}
@@ -42,7 +46,7 @@
     {% for speaker in speakers %}
     <tr class="
         {% if not speaker.results_in %}danger{% endif%}">
-        <td>{{ speaker.rank }}</td>
+        <td>{{ speaker.rank }}{{ speaker.rank_shared|yesno:"=," }}</td>
         <td>{{ speaker.name }}</td>
         {% if show_emoji > 0 and not for_print %}
             <td class="team-emoji team-{{ speaker.team.id }}"></td>

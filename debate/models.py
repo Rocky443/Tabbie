@@ -147,12 +147,18 @@ class TeamManager(models.Manager):
 
         prev_rank_value = (None, None)
         current_rank = 0
+        last_team = None
         for i, team in enumerate(teams, start=1):
             rank_value = (team.points, team.speaker_score)
             if rank_value != prev_rank_value:
                 current_rank = i
                 prev_rank_value = rank_value
+                team.rank_shared = False
+            else:
+                last_team.rank_shared = True
+                team.rank_shared = True
             team.rank = current_rank
+            last_team = team
 
         return teams
 
@@ -385,11 +391,17 @@ class SpeakerManager(models.Manager):
 
         prev_total = None
         current_rank = 0
+        last_speaker = None
         for i, speaker in enumerate(speakers, start=1):
             if speaker.total != prev_total:
                 current_rank = i
                 prev_total = speaker.total
+                speaker.rank_shared = False
+            else:
+                last_speaker.rank_shared = True
+                speaker.rank_shared = True
             speaker.rank = current_rank
+            last_speaker = speaker
 
         return speakers
 
@@ -451,12 +463,18 @@ class SpeakerManager(models.Manager):
 
         prev_rank_value = (None, None)
         current_rank = 0
+        last_speaker = None
         for i, speaker in enumerate(speakers_filtered, start=1):
             rank_value = (speaker.average, speaker.replies)
             if rank_value != prev_rank_value:
                 current_rank = i
                 prev_rank_value = rank_value
+                speaker.rank_shared = False
+            else:
+                last_speaker.rank_shared = True
+                speaker.rank_shared = True
             speaker.rank = current_rank
+            last_speaker = speaker
 
         return speakers_filtered
 
